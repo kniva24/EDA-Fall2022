@@ -9,6 +9,13 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+```{r}
+
+```
+
+
+
 ## Data frame definition
 
 A **data frame** is used for storing data tables. It a list a vector of equal length. 
@@ -110,7 +117,9 @@ ncol(df)
 nrow(df)  
 length(df)  #same as ncol
 summary(df)
-head(df) #show the first 6 rows of df
+
+
+ #show the first 6 rows of df
 
 #If you know the number of the column you want you can refer to that to access column
 df_2 <- df[1:10,1:2]
