@@ -114,7 +114,7 @@ USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 ## EXPLORE YOUR DATASET
 
 Take a moment to read through the README file associated with the USGS dataset on discharge at the Eno River. Where can you find this file? How does the placement and information found in this file relate to the best practices for reproducible data analysis?
-> ANSWER: 
+> ANSWER: the file is under metadata. it is placed in a separate file to ensure that the data is safe.
 
 ```{r Exploring data}
 View(USGS.flow.data)
@@ -132,24 +132,29 @@ colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime",
                               "gage.height.min", "gage.height.min.approval", 
                               "gage.height.mean", "gage.height.mean.approval")
 str(USGS.flow.data)
+#just show data frame and all objects on it
 dim(USGS.flow.data)
+#short for dimmension -- tells you how many rows and collumns 
 length(USGS.flow.data)
+#how many columns you have
 
 head(USGS.flow.data)
+#shows the beginning of your data -- will show first six unless you specify
 head(USGS.flow.data, 10)
 tail(USGS.flow.data, 5)
 USGS.flow.data[30000:30005, c(3, 8, 14)]
-
+#can specify which specific chunk you want to interogate
 class(USGS.flow.data$datetime)
 class(USGS.flow.data$discharge.mean)
 class(USGS.flow.data$gage.height.mean)
 
 summary(USGS.flow.data)  #could point to column only with $
+#summary just gives statistical overview
 
 ```
 
 What happened to blank cells in the spreadsheet when they were imported into R?
-> Answer: 
+> Answer: they are filled with N/A
 
 ## Adjusting Datasets
 
@@ -163,7 +168,7 @@ summary(USGS.flow.data$gage.height.mean)
 ```
 Question: What types of research questions might make it favorable to remove NAs from a dataset, and what types of research questions might make it favorable to retain NAs in the dataset?
 
-> Answer: 
+> Answer: If you want to average the data that you collected (just a list), the NAs should be removed so they do not draw the average down. If you want to know the span of time that values were collected for (time series analysis), you want to keep them to mark the times when no data was collected.
 
 ```{r Removing NAs}
 USGS.flow.data.complete <- na.omit(USGS.flow.data)
@@ -219,7 +224,7 @@ USGS.flow.data$datetime <- format(USGS.flow.data$datetime, "%y%m%d")
 create.early.dates <- (function(d) {
        paste0(ifelse(d > 191226,"19","20"),d)
        })
-#
+#d is the input 
 USGS.flow.data$datetime <- create.early.dates(USGS.flow.data$datetime)
 
 #

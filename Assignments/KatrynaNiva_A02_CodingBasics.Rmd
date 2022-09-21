@@ -57,8 +57,9 @@ MeanFirstExercise>MedianFirstExercise
 8.  Label the columns of your data frame with informative titles.
 
 ```{r}
-names <- c(a = alice, b = brandon, c = catherine, d = david)
-vector(mode = "character", length = 4)
+create_df <- data.frame("anna"=80, "brandon"=40, "catherine"=90, "david"=20)
+create_df
+  ifelse(x>50, "pass", "fail")
 
 
 ```
