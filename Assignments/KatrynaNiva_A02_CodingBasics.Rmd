@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Katryna Niva"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -32,10 +32,17 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 
 ```{r}
 #1. 
+FirstExercise <- seq(1,100,4)
+# Here I am creating a sequence using the seq function where the first number is the starting value, the second number is the ending value, and the third number is the rate of increase in the sequence.
 
 #2. 
+mean(FirstExercise) -> MeanFirstExercise
+median(FirstExercise) -> MedianFirstExercise
+# Here I am determining the mean and median of the previously created sequence using the mean and median functions. The output was 49 for both functions. I also named the results so that the third step would be easier to complete.
 
 #3. 
+MeanFirstExercise>MedianFirstExercise
+# Here I am testing the notion that the mean is greater than the mdedium. The output was False because the two functions are equivalent. 
 
 ```
 
@@ -50,6 +57,9 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 8.  Label the columns of your data frame with informative titles.
 
 ```{r}
+names <- c(a = alice, b = brandon, c = catherine, d = david)
+vector(mode = "character", length = 4)
+
 
 ```
 
