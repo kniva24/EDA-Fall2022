@@ -29,6 +29,8 @@ library(tidyverse)
 library(lubridate)
 NTL.phys.data <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE)
 
+#string as factors makes summary work for character entries
+
 colnames(NTL.phys.data)
 head(NTL.phys.data)
 summary(NTL.phys.data)
@@ -69,8 +71,8 @@ Here are the relevant commands used in the `filter` function. Add some notes to 
 `<=`
 `>`
 `>=`
-`&`
-`|`
+`&`  both should be true
+`|`  one or the other should be true
 
 ```{r}
 class(NTL.phys.data$lakeid)
@@ -94,11 +96,9 @@ dim(NTL.phys.data.surface3)
 # Choose multiple conditions to filter
 summary(NTL.phys.data$lakename)
 NTL.phys.data.PeterPaul1 <- filter(NTL.phys.data, lakename == "Paul Lake" | lakename == "Peter Lake")
-NTL.phys.data.PeterPaul2 <- filter(NTL.phys.data, lakename != "Central Long Lake" & 
-                                     lakename != "Crampton Lake" & lakename != "East Long Lake" &
-                                     lakename != "Hummingbird Lake" & lakename != "Tuesday Lake" &
-                                     lakename != "Ward Lake" & lakename != "West Long Lake")
+NTL.phys.data.PeterPaul2 <- filter(NTL.phys.data, lakename != "Central Long Lake" & lakename != "Crampton Lake" & lakename != "East Long Lake" & lakename != "Hummingbird Lake" & lakename != "Tuesday Lake" & lakename != "Ward Lake" & lakename != "West Long Lake")
 NTL.phys.data.PeterPaul3 <- filter(NTL.phys.data, lakename %in% c("Paul Lake", "Peter Lake"))
+#%in% just filters what you want examined - indicate which rows
 
 # Choose a range of conditions of a numeric or integer variable
 summary(NTL.phys.data$daynum)
@@ -106,15 +106,17 @@ NTL.phys.data.JunethruOctober1 <- filter(NTL.phys.data, daynum > 151 & daynum < 
 NTL.phys.data.JunethruOctober2 <- filter(NTL.phys.data, daynum > 151, daynum < 305)
 NTL.phys.data.JunethruOctober3 <- filter(NTL.phys.data, daynum >= 152 & daynum <= 304)
 NTL.phys.data.JunethruOctober4 <- filter(NTL.phys.data, daynum %in% c(152:304))
+#all equivalent
 
 # Exercise: 
 # filter NTL.phys.data for the year 1999
 # what code do you need to use, based on the class of the variable?
 class(NTL.phys.data$year4)
+NTL.phys.data.exercise1 <- filter(NTL.phys.data, year4 == 1999)
 
 # Exercise: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
-
+NTL.phys.data.exercise2 <- filter(NTL.phys.data, year4 %in% c(1990:1999) & lakename == "Tuesday Lake")
 
 ```
 Question: Why don't we filter using row numbers?
