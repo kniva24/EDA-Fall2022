@@ -33,6 +33,7 @@ Define what each new piece of syntax does below (i.e., fill in blank comments). 
 
 ```{r Create various data structures}
 # Vectors ----
+
 vector1 <- c(1,2,5.3,6,-2,4) # numeric vector
 vector1
 vector2 <- c("one","two","three") # character vector
@@ -40,7 +41,7 @@ vector2
 vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
 vector3
 
-vector1[3] # 
+vector1[3:4] # 
 
 # Matrices ----
 matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
@@ -53,8 +54,8 @@ matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma c
 
 matrix1[4, ] #
 matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
+matrix1[c(12, 14)] # indicates two dimensional location
+matrix1[c(12:14)] #: indicates slice
 matrix1[2:4, 1:3] #
 
 cells <- c(1, 26, 24, 68)
@@ -68,14 +69,13 @@ matrix4
 list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3); list1
 list1[[2]]
 
-# Data Frames ----
+# Data Frames ---- a list of lists
 d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
+e <- c("red", "white", "red", NA) # all list must have same number of elements if merging into a date frame = What type of vector?
 f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
 dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
 
-dataframe1[1:2,] # 
+dataframe1[1:2,] # omitting columns gives all columns
 dataframe1[c("ID","Passed")] # 
 dataframe1$ID
 
@@ -94,6 +94,8 @@ Question: In the R chunk below, write "dataframe1\$". Press `tab` after you type
 Find a ten-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. Create two vectors, one representing the high temperature on each of the ten days and one representing the low.
 
 ```{r DataExercise-1a}
+highF <- c(a=80, b=83, c=79, d=82, e=86, f=79, g=76, h=80, i=76, j=82)
+lowF <- c(a=60, b=62, c=71, d=69, e=59, f=61, g=62, h=54, i=61, j=54)
 
 ```
 
@@ -101,17 +103,29 @@ Now, create two additional vectors that include the ten-day forecast for the hig
 
 ```{r DataExercise-1b}
 
+highC <- (highF-32)*5/9
+lowC <- (lowF-32)*5/9
+
+
 ```
 
 Combine your four vectors into a data frame and add informative column names.
 
 ```{r DataExercise-1c}
 
+weather <- data.frame(highF, lowF, highC, lowC)
+
 ```
 
 Use the common functions `summary` and `sd` to obtain basic data summaries of the ten-day forecast. How would you call these functions differently for the entire data frame vs. a single column? Attempt to demonstrate both options below.
 
 ```{r DataExercise-1d}
+summary(weather)
+sd(highF)
+sd(lowF)
+sd(highC)
+sd(lowC)
+lapply(weather, sd) #use lapply to apply a funtion to an entire dataframe or matrix
 
 ```
 
@@ -126,7 +140,7 @@ Remember formatting of dates in R:
 # Write code for three different date formats. 
 # An example is provided to get you started.
 # (code must be uncommented)
-today <- Sys.Date()
+today <- Sys.Date() #returns current date
 format(today, format = "%B")
 #format(today, format = "")
 #format(today, format = "")
@@ -157,10 +171,7 @@ date_obj_today <- mdy(str_today2)
 date_obj_today
 
 #Ex_3 - on your own...
-str_juneteenth <- "19 June 1865"
-#Since the format is month-day-year we will use function mdy()
-#date_juneteenth <- ()
-#date_juneteenth
+
 ```
 
 ```{r DateExercise2}

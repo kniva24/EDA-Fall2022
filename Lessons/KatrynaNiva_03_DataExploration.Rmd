@@ -94,7 +94,9 @@ Commons functions to import datasets and store as data frames are *read.table()*
 
 ```{r Importing data}
 # Absolute file path (not recommended)
-#read.csv("/home/guest/EDA-Fall2022/Data/Raw/USGS_Site02085000_Flow_Raw.csv")
+read.csv("/home/guest/EDA-Fall2022/Data/Raw/USGS_Site02085000_Flow_Raw.csv", stringsAsFactors = TRUE)
+
+#must include stringsasfactors = true when inputting a dataset
 
 # Relative file path (friendly for users regardless of machine)
 USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")   
