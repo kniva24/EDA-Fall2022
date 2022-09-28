@@ -26,9 +26,14 @@ The completed exercise is due on Sept 30th.
 
 ```{r,  message = FALSE}
 library(tidyverse)
-Neonics <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
 
+class()
+Neonics <- 
 
+  
+read.csv("Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv", stringsAsFactors = TRUE)
+
+read.csv("Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
 ```
 
 ## Learn about your system
