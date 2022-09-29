@@ -33,7 +33,7 @@ If your working directory is not set to the folder you want, you have several op
 
 ```{r Setting the working directory }
 # Absolute file path is commented out
-setwd("/home/guest/EDA-Fall2022")
+#setwd("/home/guest/EDA-Fall2022")
 ```
 
 You may change your working directory without coding by going to the Session menu in RStudio and navigating to the Set Working Directory tab. From there, you may select from a series of options to reset your working directory. 
@@ -65,12 +65,12 @@ If a package is already installed, you will need to load it every session. You c
 #install.packages("ggplot2")
 # comment out install commands, use only when needed and re-comment
 
-library(dplyr)
-library(ggplot2)
+#library(dplyr)
+#library(ggplot2)
 
 # Some packages are umbrellas under which other packages are loaded
 #install.packages("tidyverse")
-library(tidyverse)
+#library(tidyverse)
 ```
 
 Question: What happens in the console when you load a package?
@@ -94,12 +94,12 @@ Commons functions to import datasets and store as data frames are *read.table()*
 
 ```{r Importing data}
 # Absolute file path (not recommended)
-read.csv("/home/guest/EDA-Fall2022/Data/Raw/USGS_Site02085000_Flow_Raw.csv", stringsAsFactors = TRUE)
+#read.csv("/home/guest/EDA-Fall2022/Data/Raw/USGS_Site02085000_Flow_Raw.csv", stringsAsFactors = TRUE)
 
 #must include stringsasfactors = true when inputting a dataset
 
 # Relative file path (friendly for users regardless of machine)
-USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")   
+#USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")   
 
 # What happens if we don't assign a name to our imported dataset?
 #read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
@@ -119,38 +119,38 @@ Take a moment to read through the README file associated with the USGS dataset o
 > ANSWER: the file is under metadata. it is placed in a separate file to ensure that the data is safe.
 
 ```{r Exploring data}
-View(USGS.flow.data)
+#View(USGS.flow.data)
 # Alternate option: click on data frame in Environment tab
 
-class(USGS.flow.data)
-colnames(USGS.flow.data)
+#class(USGS.flow.data)
+#colnames(USGS.flow.data)
 
 # Rename columns
-colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime", 
-                              "discharge.max", "discharge.max.approval", 
-                              "discharge.min", "discharge.min.approval", 
-                              "discharge.mean", "discharge.mean.approval", 
-                              "gage.height.max", "gage.height.max.approval", 
-                              "gage.height.min", "gage.height.min.approval", 
-                              "gage.height.mean", "gage.height.mean.approval")
-str(USGS.flow.data)
+#colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime", 
+                  #            "discharge.max", "discharge.max.approval", 
+                   #           "discharge.min", "discharge.min.approval", 
+                    #          "discharge.mean", "discharge.mean.approval", 
+                     #         "gage.height.max", "gage.height.max.approval", 
+                      #        "gage.height.min", "gage.height.min.approval", 
+                       #       "gage.height.mean", "gage.height.mean.approval")
+#str(USGS.flow.data)
 #just show data frame and all objects on it
-dim(USGS.flow.data)
+#dim(USGS.flow.data)
 #short for dimmension -- tells you how many rows and collumns 
-length(USGS.flow.data)
+#length(USGS.flow.data)
 #how many columns you have
 
-head(USGS.flow.data)
+#head(USGS.flow.data)
 #shows the beginning of your data -- will show first six unless you specify
-head(USGS.flow.data, 10)
-tail(USGS.flow.data, 5)
-USGS.flow.data[30000:30005, c(3, 8, 14)]
+#head(USGS.flow.data, 10)
+#tail(USGS.flow.data, 5)
+#USGS.flow.data[30000:30005, c(3, 8, 14)]
 #can specify which specific chunk you want to interogate
-class(USGS.flow.data$datetime)
-class(USGS.flow.data$discharge.mean)
-class(USGS.flow.data$gage.height.mean)
+#class(USGS.flow.data$datetime)
+#class(USGS.flow.data$discharge.mean)
+#class(USGS.flow.data$gage.height.mean)
 
-summary(USGS.flow.data)  #could point to column only with $
+#summary(USGS.flow.data)  #could point to column only with $
 #summary just gives statistical overview
 
 ```
@@ -165,21 +165,21 @@ What happened to blank cells in the spreadsheet when they were imported into R?
 Notice in our dataset that our discharge and gage height observations have many NAs, meaning no measurement was recorded for a specific day. In some cases, it might be in our best interest to remove NAs from a dataset. Removing NAs or not will depend on your research question.
 
 ```{r Finding NAs}
-summary(USGS.flow.data$discharge.mean)
-summary(USGS.flow.data$gage.height.mean)
+#summary(USGS.flow.data$discharge.mean)
+#summary(USGS.flow.data$gage.height.mean)
 ```
 Question: What types of research questions might make it favorable to remove NAs from a dataset, and what types of research questions might make it favorable to retain NAs in the dataset?
 
 > Answer: If you want to average the data that you collected (just a list), the NAs should be removed so they do not draw the average down. If you want to know the span of time that values were collected for (time series analysis), you want to keep them to mark the times when no data was collected.
 
 ```{r Removing NAs}
-USGS.flow.data.complete <- na.omit(USGS.flow.data)
-dim(USGS.flow.data)
-dim(USGS.flow.data.complete)
+#USGS.flow.data.complete <- na.omit(USGS.flow.data)
+#dim(USGS.flow.data)
+#dim(USGS.flow.data.complete)
 
-mean(USGS.flow.data.complete$discharge.mean)
-sd(USGS.flow.data.complete$discharge.mean)
-summary(USGS.flow.data.complete$discharge.mean)
+#mean(USGS.flow.data.complete$discharge.mean)
+#sd(USGS.flow.data.complete$discharge.mean)
+#summary(USGS.flow.data.complete$discharge.mean)
 
 ```
 
@@ -201,36 +201,36 @@ Formatting of dates in R:
 In some cases when dates are provided as integers, you may need to provide an origin for your dates. Beware: the "origin" date for Excel (Windows), Excel (Mac), R, and MATLAB all have different origin dates. Google this if it comes up.
 
 ```{r Date formats}
-help(as.Date)
+#help(as.Date)
 
 # Adjust date formatting [to be done in lab session]
 # Write code for three differtent date formats.
 # An example is provided to get you started.
 # (code must be uncommented)
-today <- Sys.Date()
-format(today, format = "%B")
+#today <- Sys.Date()
+#format(today, format = "%B")
 #format(today, format = "")
 #format(today, format = "")
 #format(today, format = "")
 
-USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%m/%d/%y") 
+#USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%m/%d/%y") 
 ```
 
 Note that for every date prior to 1969, R has assigned the date in the 2000s rather than the 1900s. This can be fixed with an `ifelse` statement inside a function. Run through the code below and write what is happening in the comment above each line.
 
 ```{r Fixing dates}
 # 
-USGS.flow.data$datetime <- format(USGS.flow.data$datetime, "%y%m%d")
+#USGS.flow.data$datetime <- format(USGS.flow.data$datetime, "%y%m%d")
 
 #
-create.early.dates <- (function(d) {
-       paste0(ifelse(d > 191226,"19","20"),d)
-       })
+#create.early.dates <- (function(d) {
+#       paste0(ifelse(d > 191226,"19","20"),d)
+ #      })
 #d is the input 
-USGS.flow.data$datetime <- create.early.dates(USGS.flow.data$datetime)
+#USGS.flow.data$datetime <- create.early.dates(USGS.flow.data$datetime)
 
 #
-USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y%m%d") 
+#USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y%m%d") 
 
 ```
 
@@ -240,7 +240,7 @@ We just edited our raw dataset into a processed form. We may want to return to t
 
 
 ```{r Saving data}
-write.csv(USGS.flow.data, file = "./Data/Processed/USGS_Site02085000_Flow_Processed.csv", row.names=FALSE)
+#write.csv(USGS.flow.data, file = "./Data/Processed/USGS_Site02085000_Flow_Processed.csv", row.names=FALSE)
 
 ```
 

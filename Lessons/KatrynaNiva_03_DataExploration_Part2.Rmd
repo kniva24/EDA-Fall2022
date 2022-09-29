@@ -23,10 +23,10 @@ Why is data exploration our first step in analyzing a dataset? What information 
 
 ```{r, message = FALSE}
 # 1. Set up your working directory
-getwd()
+#getwd()
 
 # 2. Load packages
-library(tidyverse)
+#library(tidyverse)
 
 # 3. Import datasets
 USGS.flow.data <- read.csv("./Data/Processed/USGS_Site02085000_Flow_Processed.csv")
