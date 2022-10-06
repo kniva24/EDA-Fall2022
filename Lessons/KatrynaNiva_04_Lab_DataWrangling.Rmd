@@ -51,6 +51,10 @@ Filtering allows us to choose certain rows (observations) in our dataset.
 class(NTL.phys.data$lakeid)
 class(NTL.phys.data$depth)
 
+read.csv("Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
+
+read.csv("")
+
 # dplyr filtering
 NTL.phys.data.surface <- filter(NTL.phys.data, depth == 0)
 
@@ -58,6 +62,7 @@ NTL.phys.data.surface <- filter(NTL.phys.data, depth == 0)
 summary(NTL.phys.data$lakename)
 NTL.phys.data.PeterPaul <- filter(NTL.phys.data, lakename %in% c("Paul Lake", "Peter Lake"))
 
+#%in% means you only do the previous data in those lakenames
 # Choose a range of conditions of a numeric or integer variable
 summary(NTL.phys.data$daynum)
 NTL.phys.data.JunethruOctober <- filter(NTL.phys.data, daynum %in% c(152:304))
@@ -65,16 +70,16 @@ NTL.phys.data.JunethruOctober <- filter(NTL.phys.data, daynum %in% c(152:304))
 # Exercise 1: 
 # filter NTL.phys.data for the year 1999
 # what code do you need to use, based on the class of the variable?
-
+NTL.phys.data.1999 <- filter(NTL.phys.data, year4 %in% c(1999))
 
 # Exercise 2: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
-
+NTL.phys.data.TuesdayNineties <- filter(NTL.phys.data, year4 %in% c(1990:1999) & lakename %in% "Tuesday Lake")
 
 ```
 Question: Why don't we filter using row numbers?
 
-> Answer: 
+> Answer: row numbers can be arbitrary when we sort the data
 
 ## Pipes
 
@@ -91,11 +96,21 @@ NTL.phys.data.processed <-
 
 #Exercise 3: Using a pipe filter NTL.phys.data for Tuesday Lake from 1990 through 1999 only for July 
 
-
+NTL.phys.data.JulyTuesdayNineties <-
+  NTL.phys.data %>%
+  filter(lakename == "Tuesday Lake") %>%
+  filter(year4 %in% c(1990:1999)) %>%
+  filter(month(sampledate) == 7)
 
 
 
 #Exercise 4: Using the data from part 3, a pipe and the summarise() function find the mean surface temperature (hints: you will need to add another filter for depth==0). Make sure you eliminate NAs before computing the means
+
+Ex4 <-
+  NTL.phys.data.JulyTuesdayNineties %>% 
+  filter(depth == 0) %>%
+  drop_na(temperature_C) %>%
+  summarize(mean_surf_temp = mean(temperature_C))
 
   
 ```
@@ -106,7 +121,13 @@ For gather we will use `pivot_longer` and for spread we will use `pivot_wider`.
 
 ```{r}
 #Exercise 5: gather irradiance data (measured in the water column and measured on the deck of the sampling boat) into one column using pivot_longer
-
+NTL.phys.data.Ex5 <-
+  NTL.phys.data %>%
+  pivot_longer(
+    irradianceWater:irradianceDeck,
+    names_to = "depth",
+    values_to = "radiation"
+  )
 
 #Exercise 6: spread temperatureC into more than one column based on the depth
 
