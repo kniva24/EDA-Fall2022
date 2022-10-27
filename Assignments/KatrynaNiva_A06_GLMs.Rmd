@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: GLMs (Linear Regressios, ANOVA, & t-tests)"
-author: "Student Name"
+author: "Katryna Niva"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -34,10 +34,26 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r setup}
 #1
+getwd()
 
+library(tidyverse)
+library(agricolae)
+library(lubridate)
+library(ggplot2)
+library(ggpubr)
+library(corrplot)
+
+RawData <- read_csv("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+
+RawData$sampledate <- as.Date(RawData$sampledate, format = "%m/%d/%y")
 
 #2
 
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top") 
+
+theme_set(mytheme)
 
 ```
 
@@ -46,8 +62,8 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: The mean lake temperature recorded during July does not change with depth across all lakes or there is no linear relationship between lake temperature and depth across the data selected.
+Ha: The mean lake temperature recorded during July does change with depth across all lakes or there is a linear relationship between lake temperature and depth across the data selected.
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -60,16 +76,31 @@ Ha:
 ```{r scatterplot}
 #4
 
+WrangledData <- 
+  RawData %>%
+  mutate(Month = month(sampledate)) %>%
+  filter(Month %in% c(7))%>%
+  select(lakename, year4, daynum, depth, temperature_C)%>%
+  na.omit()
 
 #5
 
+Ex5 <- ggplot(WrangledData, aes(x=temperature_C, y=depth))+
+  geom_point()+
+  geom_smooth(method = NULL, color = "lightgreen") +
+  ylab("Depth")+
+  xlab("Temperature (C)")+
+  scale_y_reverse()+
+  scale_x_continuous(limits = c(0,35))
+
+print(Ex5)
 
 ```
 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: The plot suggests a general trend with greater depths relating to colder temperatures. It is not a linear relationship though. The more gradual slope at the lesser depths suggests a mixed layer where warmed surface water is cycled. This mixed layer seems to be bordered at around 5m of depth, when the slope becomes far steeper, indicating more minimal mixing with more surface level sun-warmed waters. This indicates a rejection of the null hypothesis.
 
 
 7. Perform a linear regression to test the relationship and display the results
@@ -77,13 +108,17 @@ Ha:
 ```{r linear.regression}
 #7
 
+TempDepthRegression <- lm(WrangledData$temperature_C ~ WrangledData$depth)
+
+summary(TempDepthRegression)
+
 
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer:This linear regression shows a very strong relationship between depth and temperature within this selected dataset. The adjusted R-squared is 0.7387. This indicates that about 74% of the variability in temperature is explained by depth. This finding is with a single degree of freedom since it is only considering temperature and depth. The finding is statistically significant because the p value is 2e-15, far lower than 0.05. The temperaure is predicted to drop around 1.9 degrees for every meter of depth. 
 
 
 ---
@@ -99,10 +134,19 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 ```{r temperature.model}
 #9
 
+WrangledData2 <- WrangledData %>%
+  select(year4, daynum, depth, temperature_C) %>%
+  na.omit()
 
+LakeAIC <- cor(WrangledData2)
+corrplot(LakeAIC, method = "ellipse")
+corrplot.mixed(LakeAIC, upper = "ellipse")
 
 #10
 
+TempDepthDaynumRegression <- lm(WrangledData$temperature_C ~ WrangledData$depth + WrangledData$daynum)
+
+summary(TempDepthDaynumRegression)
 
 ```
 
@@ -120,6 +164,48 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 ```{r anova.model}
 #12
 
+summary(WrangledData)
+
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Paul Lake"])
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Peter Lake"])
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Tuesday Lake"])
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Crampton Lake"])
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "East Long Lake"])
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Hummingbird Lake"])
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Ward Lake"])
+shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "West Long Lake"])
+
+#results: reject null in all lakes
+
+qqnorm(WrangledData$temperature_C); qqline(WrangledData$temperature_C)
+
+bartlett.test(WrangledData$temperature_C ~ WrangledData$lakename)
+
+#results: reject null i.e. variances are not equal
+
+Lake.Totals.anova <- aov(data = WrangledData, temperature_C ~ lakename)
+summary(Lake.Totals.anova)
+
+#results: reject null hypothesis 
+
+Lake.Totals.anova2 <- lm(data = WrangledData, temperature_C ~ lakename)
+summary(Lake.Totals.anova2)
+
+plot(Lake.Totals.anova2)
+
+TukeyHSD(Lake.Totals.anova)
+
+Lake.Totals.groups <- HSD.test(Lake.Totals.anova, "lakename", group = TRUE)
+Lake.Totals.groups
+
+Lake.Totals.plot <- ggplot(WrangledData, aes(x = lakename, y = temperature_C)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  stat_summary(geom = "text", fun = max, vjust = -1, size = 3.5,
+               label = c("a", "ab", "bc", "c", "c", "d", 
+                         "de", "de", "e")) +
+  labs(x = "Lake Name", y = "Temperature (C)")
+print(Litter.Totals.plot)
 
 ```
 
