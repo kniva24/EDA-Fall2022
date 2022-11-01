@@ -32,7 +32,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 2. Build a ggplot theme and set it as your default theme.
 
-```{r setup}
+```{r}
 #1
 getwd()
 
@@ -85,13 +85,12 @@ WrangledData <-
 
 #5
 
-Ex5 <- ggplot(WrangledData, aes(x=temperature_C, y=depth))+
+Ex5 <- ggplot(WrangledData, aes(x=depth, y=temperature_C))+
   geom_point()+
   geom_smooth(method = NULL, color = "lightgreen") +
-  ylab("Depth")+
-  xlab("Temperature (C)")+
-  scale_y_reverse()+
-  scale_x_continuous(limits = c(0,35))
+  ylab("Temperature (C)")+
+  xlab("Depth")+
+  scale_y_continuous(limits = c(0,35))
 
 print(Ex5)
 
@@ -118,8 +117,7 @@ summary(TempDepthRegression)
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:This linear regression shows a very strong relationship between depth and temperature within this selected dataset. The adjusted R-squared is 0.7387. This indicates that about 74% of the variability in temperature is explained by depth. This finding is with a single degree of freedom since it is only considering temperature and depth. The finding is statistically significant because the p value is 2e-15, far lower than 0.05. The temperaure is predicted to drop around 1.9 degrees for every meter of depth. 
-
+> Answer:This linear regression shows a very strong relationship between depth and temperature within this selected dataset. The adjusted R-squared is 0.7387. This indicates that about 73.9% of the variability in temperature is explained by depth. This finding is with a single degree of freedom since it is only considering temperature and depth. The finding is statistically significant and the null hypothesis can be rejected because the p value is 2e-15, far lower than 0.05. The temperaure is predicted to drop around 1.9 degrees for every meter of depth. 
 
 ---
 
@@ -134,13 +132,22 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 ```{r temperature.model}
 #9
 
+LakeModel <- lm(data = WrangledData, temperature_C ~ year4 + daynum + depth)
+step(LakeModel)
+summary(LakeModel)
+
+#since both daynum and depth have very small p-values, this test indicates that both of these variables should be considered. 
+
 WrangledData2 <- WrangledData %>%
   select(year4, daynum, depth, temperature_C) %>%
   na.omit()
 
 LakeAIC <- cor(WrangledData2)
+print(LakeAIC)
 corrplot(LakeAIC, method = "ellipse")
 corrplot.mixed(LakeAIC, upper = "ellipse")
+
+#Here you can see the very strong correlation between depth and temperature and a very shallow slight correlation of 0.05 for temperature and daynum. Although the daynum contribution seems insignificant, this coroborates the previous finding. 
 
 #10
 
@@ -152,9 +159,7 @@ summary(TempDepthDaynumRegression)
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: 
-
-
+> Answer: The final set of explanatory variables for temperature across all lakes is both depth and day number. This model explains 74.1% of the variability in temperature. This is a marginal improvement to the R-value from the previous analysis with only depth although I am not sure this small improvement is worth the added complexity of adding an additional parameter. 
 
 ---
 ## Analysis of Variance
@@ -164,25 +169,6 @@ summary(TempDepthDaynumRegression)
 ```{r anova.model}
 #12
 
-summary(WrangledData)
-
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Paul Lake"])
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Peter Lake"])
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Tuesday Lake"])
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Crampton Lake"])
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "East Long Lake"])
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Hummingbird Lake"])
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "Ward Lake"])
-shapiro.test(WrangledData$temperature_C[WrangledData$lakename == "West Long Lake"])
-
-#results: reject null in all lakes
-
-qqnorm(WrangledData$temperature_C); qqline(WrangledData$temperature_C)
-
-bartlett.test(WrangledData$temperature_C ~ WrangledData$lakename)
-
-#results: reject null i.e. variances are not equal
-
 Lake.Totals.anova <- aov(data = WrangledData, temperature_C ~ lakename)
 summary(Lake.Totals.anova)
 
@@ -190,10 +176,6 @@ summary(Lake.Totals.anova)
 
 Lake.Totals.anova2 <- lm(data = WrangledData, temperature_C ~ lakename)
 summary(Lake.Totals.anova2)
-
-plot(Lake.Totals.anova2)
-
-TukeyHSD(Lake.Totals.anova)
 
 Lake.Totals.groups <- HSD.test(Lake.Totals.anova, "lakename", group = TRUE)
 Lake.Totals.groups
@@ -205,21 +187,28 @@ Lake.Totals.plot <- ggplot(WrangledData, aes(x = lakename, y = temperature_C)) +
                label = c("a", "ab", "bc", "c", "c", "d", 
                          "de", "de", "e")) +
   labs(x = "Lake Name", y = "Temperature (C)")
-print(Litter.Totals.plot)
+
+print(Lake.Totals.plot)
 
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
-
-
+> Answer: There is a significant difference between some lakes, while others are not significantly different. The anova model shows that significant difference does exist as a whole as the p-value is extremely low. The linear model bettef shows the differentiation between the variability of different lakes. This is all best visualized in the graph immediately above. There seems to be a few distinct groupings (a, b, c, d, and e) but there is overlap in several lakes. 
 
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r scatterplot.2}
 #14.
 
+Ex14 <- ggplot(WrangledData, aes(x=depth, y=temperature_C, color=lakename, alpha = 0.5))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE) +
+  ylab("Temperature (C)")+
+  xlab("Depth")+
+  scale_y_continuous(limits = c(0,35))
+
+print(Ex14)
 
 ```
 
@@ -228,25 +217,34 @@ print(Litter.Totals.plot)
 ```{r tukey.test}
 #15
 
+TukeyHSD(Lake.Totals.anova)
 
 ```
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
-
- 
+>Answer: Paul Lake and Ward Lake are the two lakes with no statistically significant difference in mean temperature to Peter Lake. There are no lakes that are statistically significant from all other lakes. 
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
-
+>Answer: You can do this by running a two-sample T-test on Peter Lake and Paul Lake. 
 
 
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
 
+WrangledData2 <- 
+  RawData %>%
+  mutate(Month = month(sampledate)) %>%
+  filter(Month %in% c(7))%>%
+  select(lakename, year4, daynum, depth, temperature_C)%>%
+  filter(lakename %in% c("Crampton Lake", "Ward Lake")) %>%
+  na.omit()
+
+Lake.CramptonWard <- t.test(WrangledData2$temperature_C ~ WrangledData2$lakename)
+Lake.CramptonWard
+
 ```
 
->Answer: 
+>Answer: The t-test gives a p-value of 0.2649. As this is far greater than 0.05, we can reject the null hypothesis that the two lakes do not have statistically equivalent mean temperatures. The two lakes have a statistically significant difference in temperature, as is seen in the Turkey's HSD test completed above. 
