@@ -119,6 +119,7 @@ EnoDischarge.late_ts <- ts(EnoDischarge.late$discharge.mean, start = c(1985,1), 
 ```
 
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
+#smaller the right hand bar, larger the representation of that factor within the data
 
 ```{r}
 ?stl
@@ -202,19 +203,20 @@ Specific tests for monotonic trend analysis are listed below, with assumptions a
 * **linear regression**: no seasonality, fits the assumptions of a parametric test. Function: `lm`
 * **Mann-Kendall**: no seasonality, non-parametric, missing data allowed. Function: `MannKendall()` (package: Kendall)
 * **Seasonal Mann-Kendall**: seasonality, non-parametric `SeasonalMannKendall` (package: Kendall)
+#must run on a time series -- if s is positive -- increasing
 * **Spearman Rho**: no seasonality, non-parametric, missing data allowed. Function: `cor.test(method="spearman")` (package: stats)
 
 Specific test for stochastic trend analysis:
 
 * **Augmented Dickey Fuller**: no seasonality, non-parametric, missing data not allowed. Function: `adf.test()` (package: tseries)
 
-
+#do ADF first -- if you get stochastic trend then your work is done, if not then do mann kendall
 #### Example: monotonic trend analysis
 
 Let's refer to our wind speed data. We already performed interpolation, but we still need to create our time series object and decompose the series to find out which stationarity test we can apply. 
 
 Note that wind speed has a seasonal cycle. We might be interested in knowing how (if) speed has changed over the course of measurement while incorporating the seasonal component. In this case, we will use a Seasonal Mann-Kendall test to figure out whether a monotonic trend exists.
-
+#smaller the right hand bar, larger the representation of that factor within the data
 
 ```{r}
 

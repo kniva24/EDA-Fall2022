@@ -82,12 +82,19 @@ BRA_complete <- inner_join(Rainfall_BR_processed,Temp_BR_processed)
 
 #Exercise 5: Check if there is any missing data for both temperature and rainfall series.
 
-
-
+summary(BRA_complete$Rainfall)
+#no NAs -- not always enough
 
 #Exercise 6: Plot both series over time on separate plots. Add a trend line using geom_smooth(). Can you say something about the trend just by visualizing the data?
 
+ggplot(Rainfall_BR_processed, aes(x=Date, y=Rainfall))+
+  geom_line()+
+  geom_smooth()
 
+
+ggplot(Temp_BR_processed, aes(x=Date, y=Temperature_C))+
+  geom_line()+
+  geom_smooth(method="lm")
 
 
 
@@ -100,6 +107,17 @@ BRA_complete <- inner_join(Rainfall_BR_processed,Temp_BR_processed)
 #Exercise 7: Create a time series objects for each series using ts(). Make sure you specify the starting point and frequency.
 
 
+
+wind_data_ts <- ts(wind_data_clean$AWND.clean,
+                   start=c(f_year,f_month),
+                   frequency=12) 
+
+ra(data = BRA_complete, start = 1, end = c(2016-12-0))
+
+
+raindata_ts <- ts(BRA_complete$Rainfall,
+                  start = c(f_year,f_month, f_day),
+                  
 
 ```
 
